@@ -13,5 +13,6 @@ function(dat, grp, cutoff=0.3){
   }
   
   svdres=svds(dat[-iismall,])
-  return(cbind(svdres$v[,1, drop=F]))
+  return(list(out = cbind(svdres$v[,1, drop=F]),
+              usedGenes = rownames(dat[-iismall,])))
 }

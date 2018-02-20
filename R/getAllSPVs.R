@@ -17,6 +17,7 @@ function(data, grp, dataTag, method=c("mixed", "raw", "residual", "SVA"), plot=F
   vv=apply(data,1,var)
   iiuse=which(vv[cm]>0)
   dataTag=dataTag[iiuse,,drop=F]
+  allUsedGenes = list()
   for (i in 1:ncol(dataTag)) {
     
     genes=rownames(dataTag)[(which(dataTag[,i]>0))]
@@ -30,6 +31,9 @@ function(data, grp, dataTag, method=c("mixed", "raw", "residual", "SVA"), plot=F
     else if (method=="mixed"){     
       
       sv=svdIntGrp(data[genes,], grp, cutoff=mix.par)
+      usedGenes = sv$usedGenes
+      allUsedGenes[[colnames(dataTag)[i]]] = usedGenes
+      sv = sv$out
       
       ppcell=f.pvalue(t(sv), grp)  
       message(paste(colnames(dataTag)[i],"f p.value=",ppcell))
@@ -77,5 +81,11 @@ function(data, grp, dataTag, method=c("mixed", "raw", "residual", "SVA"), plot=F
   }
   colnames(SPVs)=colnames(dataTag)
   SPVs
+  if(method == 'mixed'){
+      return(list(SPVs = SPVs,
+                  usedGenes = allUsedGenes))
+  } else{
+      return(SPVs)
+  }
   
 }
